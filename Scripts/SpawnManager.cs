@@ -13,36 +13,49 @@ public class SpawnManager : MonoBehaviour
     public int waveLevel = 1;
 
     private GameObject instantiatedGoal;
+    public GameObject player;
+
+    private bool gameOver = false;
 
     void Start()
     {
         SpawnEnemyWave(2);
         SpawnGoal();
         Instantiate(powerupPrefab, GenerateSpawnPosition(), powerupPrefab.transform.rotation);
+        player = GameObject.FindWithTag("Player");
     }
 
     void Update()
     {
 
-        //Wave manager
-        enemyCount = FindObjectsOfType<Enemy>().Length;
-        if (enemyCount == 0)
+        // If player did not die, update wave manager.
+        if (player.transform.position.y > -5 && !gameOver)
         {
-            waveLevel++;
-            print("Level: " + waveLevel + ". Wave%2: " + waveLevel%2);
-
-            SpawnEnemyWave(waveLevel * 2);
-
-            if (instantiatedGoal)
+            //Wave manager
+            enemyCount = FindObjectsOfType<Enemy>().Length;
+            if (enemyCount == 0)
             {
-                Destroy(instantiatedGoal);
-            }
-            SpawnGoal();
+                waveLevel++;
+                print("Level: " + waveLevel + ". Wave%2: " + waveLevel % 2);
 
-            if (waveLevel%2 == 0)
-            {
-                SpawnPowerup();
+                SpawnEnemyWave(waveLevel * 2);
+
+                if (instantiatedGoal)
+                {
+                    Destroy(instantiatedGoal);
+                }
+                SpawnGoal();
+
+                if (waveLevel % 2 == 0)
+                {
+                    SpawnPowerup();
+                }
             }
+        }
+        else 
+        {
+            gameOver = true;
+            Debug.Log("Game Over");
         }
     }
 
@@ -57,7 +70,7 @@ public class SpawnManager : MonoBehaviour
     Vector3 GenerateGoal()
     {
         int x = 13;
-        if (waveLevel%2 == 0)
+        if (waveLevel % 2 == 0)
         {
             x = -13;
         }
